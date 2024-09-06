@@ -1,0 +1,368 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+skinparam classAttributeIconSize 0
+skinparam ranksep 1
+
+package controller {
+    class TeamController{
+        - teamService : TeamService
+        - dtoMapper : BusinessModelToDTOMapper
+        - businessModelMapper : DTOToBusinessModelMapper
+        + getTeamList() : ResponseEntity<Object>
+        + getTeamById(id : String) ResponseEntity<Object>
+        + getAvatarByTeamId(teamId : String) ResponseEntity<Object>
+        + getMembersByTeamId(teamId : String) ResponseEntity<Object>
+        + createTeam(team : CreateTeamDTO) : ResponseEntity<Object>
+        + updateTeam(id : String, team : UpdateTeamDTO) : ResponseEntity<Object>
+        + addTeamAvatar(teamId : String, image : MultipartFile) : ResponseEntity<Object>
+        + updateTeamStatus(id : String) : ResponseEntity<Object>
+        - getInvalidInputResponse(exception : InvalidInputException) : ResponseEntity<Object>
+        - getDataRowNotFoundResponse(exception : DataRowNotFoundException) : ResponseEntity<Object>
+        - getEntityAlreadyExistsResponse(exception : EntityAlreadyExistsException) : ResponseEntity<Object>
+        - getGenericErrorResponse(exception : Exception) : ResponseEntity<Object>
+    }
+
+    class CreateTeamDTO{
+        - name : String
+        - members :  List<Integer>
+        - createdBy : int
+        + constructor(name : string,
+          members : List<Integer>, createdBy int)
+    }
+
+    class UpdateTeamDTO{
+        - name : String
+        - members :  List<Integer>
+        + constructor(name : string,
+          members : List<Integer>)
+    }
+
+    class TeamListElementDTO {
+        - id : int
+        - name : String
+        + constructor(id : int, name : String)
+    }
+
+    class IdDTO {
+        - id : int
+        + constructor(id : int)
+    }
+
+    class TeamDetailsDTO {
+        - name : String
+        - members : List<UserNameAndIdDTO>
+        - createdAt : Date
+        + constructor(id : int)
+    }
+
+    class UserNameAndIdDTO {
+        - id : int
+        - firstName : String
+        - prefixes : String
+        - lastName : String
+        + constructor(id : int, firstName : String, prefixes : String, lastName : String)
+    }
+
+    class TeamAvatarDTO {
+        - type : String
+        - image : byte[]
+        + constructor(type : String, image : byte[])
+    }
+}
+
+package business{
+    class TeamService{
+        - teamModel : TeamModel
+        + getTeamList() : List<BusinessTeam>
+        + getTeamById(id : String) : BusinessTeam
+        + getAvatarByTeamId(teamId : String) : BusinessImage
+        + getMembersByTeamId(teamId : String) : List<BusinessUser>
+        + createTeam(team : BusinessTeam) : String
+        + updateTeam(id : String, team : BusinessTeam) : void
+        + addTeamAvatar(teamId : String, image : MultipartFile) : String
+        + updateTeamStatus(id : String)
+    }
+    class BusinessTeam{
+        - id : String
+        - name : String
+        - members : List<BusinessUser>
+        - createdAt : Date
+        - createdBy : BusinessUser
+        {static} - nameRegex : Pattern
+        + constructor(name : string, memberIds : List<Integer>, createdBy int)
+        + constructor(name : string, memberIds : List<Integer>)
+        + constructor(id : String, name : string, members : List<BusinessUser>,
+        createdAt : Date, createdBy : BusinessUser)
+
+        + validateToCreate() : void
+        + validateToUpdate() : void
+        - validateName() : void
+        - validateNameLength() : void
+        - validateNameCharacters() : void
+        - validateCreator() : void
+        - validateMembers() : void
+        - validateUniqueMemberIds() void
+        {method} getters and setters
+    }
+
+    class BusinessImage {
+        - id : String
+        - type : String
+        - inputImage : MultipartFile
+        - savableImage : byte[]
+        + constructor(type : String, inputImage : MultipartFile)
+        + constructor(type : String, savableImage : byte[])
+        + validate() : void
+        + convertInputImageToSavableImage() : void
+        - validateSize() : void
+        - validateExtension() : void
+        - validateMimeType() : void
+        - validateDimensions(originalImage : BufferedImage) : void
+        {method} getters and setters
+    }
+
+    class BusinessUser {
+        - id : int
+        - firstName : String
+        - prefixes : String
+        - lastName : String
+        - email : String
+        - password : String
+        - role : Role
+        + constructor(id : int)
+        + constructor(id: int, firstname : String, prefixes : String,
+         lastName : String, email : String)
+        {method} getters and setters
+        }
+}
+
+package data{
+    class TeamModel{
+        - teamRepository: TeamRepository
+        - imageRepository: ImageRepository
+        - businessModelMapper: EntityToBusinessModelMapper
+        - entityMapper: BusinessModelToEntityMapper
+        + getTeamList() : List<BusinessTeam>
+        + getTeamById(id : String) : BusinessTeam
+        + getAvatarByTeamId(teamId : String) : BusinessImage
+        + getMembersByTeamId(teamId : String): List<BusinessUser>
+        + createTeam(businessTeam : BusinessTeam) : String
+        + updateTeam(id : String, businessTeam : BusinessTeam) : void
+        + addTeamAvatar(teamId : String, image BusinessImage) : String
+        + updateTeamStatus(id : String) : void
+        - findTeamById(id : String) : Team
+        - saveTeam(team : Team) : Team
+        - handleDataIntegrityViolationException(exception : DataIntegrityViolationException)
+        - handleJpaObjectRetrievalFailureException(exception : JpaObjectRetrievalFailureException)
+    }
+    interface TeamRepository{
+        + save(entity : Team) : Team
+        + findByName(name : String) : Team
+        + findTop100ByIsActiveTrueOrderByName() : Iterable<Team>
+    }
+
+    interface TeamRepository{
+        + save(entity : Team) : Team
+    }
+
+    interface ImageRepository{
+        + save(entity : Team) : Team
+    }
+
+    entity Team{
+        - id: String
+        - name : String
+        - createdAt : Date
+        - createdBy : User
+        - members : Collection<User>
+        - image : Image
+        - isActive : boolean
+        + constructor()
+        + constructor(name : String, createdAt : Date,
+        createdBy : User, members : Collection<User>)
+        + constructor(name : String, createdAt : Date,
+        createdBy : User, members : Collection<User>, image : Image)
+        {method} getters and setters
+    }
+
+    entity User{
+        - id: int
+        - firstName : String
+        - prefixes : String
+        - lastName : String
+        - role : Role
+        - email : String
+        - password : String
+        + constructor(id : int, firstname : String,
+          prefixes : String, lastName : String, email : String)
+          {method} getters and setters
+    }
+
+    entity Image{
+        - id : String
+        - type : String
+        - image : byte[]
+        + constructor()
+        + constructor(type : String, image : byte[])
+        {method} getters and setters
+    }
+}
+package util{
+    together {
+        enum ErrorCode{
+            NUMERIC_ID_REQUIRED
+            UNAUTHORIZED
+            SESSION_EXPIRED
+            INVALID_REQUEST_BODY
+            INVALID_QUERY_CHARACTER
+            GENERIC_ERROR
+
+            USER_NOT_FOUND
+            EMAIL_ALREADY_EXISTS
+            INVALID_CREDENTIALS
+            INVALID_LENGTH_FIRST_NAME
+            INVALID_LENGTH_LAST_NAME
+            INVALID_LENGTH_PREFIX
+            INVALID_EMAIL
+            EMAIL_IS_EMPTY
+            INVALID_PASSWORD
+            INCORRECT_PASSWORD
+            NEW_PASSWORD_EQUAL_TO_OLD
+            INVALID_ROLE
+
+            TEAM_NOT_FOUND
+            NAME_ALREADY_EXISTS
+            INVALID_NAME_LENGTH
+            INVALID_NAME_CHARACTER
+            INVALID_STARTING_CHARACTER
+            NAME_IS_EMPTY
+            MEMBER_NOT_FOUND
+            INVALID_MEMBER_AMOUNT
+            DUPLICATE_MEMBER_IDS
+            MEMBER_IS_EMPTY
+            AVATAR_NOT_FOUND
+            INVALID_MIME_TYPE
+            INVALID_SIZE
+            INVALID_EXTENSION
+            INVALID_DIMENSIONS
+            CREATOR_IS_EMPTY
+            CREATOR_NOT_FOUND
+
+            CONTEXT_NOT_FOUND
+            CONTAINER_NOT_FOUND
+            COMPONENT_NOT_FOUND
+
+            + code : String
+            - constructor(code : String)
+        }
+
+        class ErrorResponse {
+            - errorCode : int
+            + constructor(errorCode: int)
+            {method} getters and setters
+        }
+
+        class BusinessModelToDTOMapper {
+            + mapToUserByIdDTO(businessUser : BusinessUser) : UserByIdDTO
+            + mapToTeamListElementDTOs(businessTeams : List<BusinessTeam>) : List<TeamListElementDTO>
+            + mapToTeamAvatarDTO(businessImage : BusinessImage) : TeamAvatarDTO
+            + mapToUserNameAndIdDTOs(businessUsers : List<BusinessUser) : List<UserNameAndIdDTO>
+            + mapToTeamDetailsDTO(businessTeam : BusinessTeam) : TeamDetailsDTO
+            + mapToIdDTO(id : String) : IdDTO
+        }
+
+        class DTOToBusinessModelMapper{
+            + mapToBusinessTeam(createTeamDTO : CreateTeamDTO) : BusinessTeam
+            + mapToBusinessTeam(updateTeamDTO : UpdateTeamDTO) : BusinessTeam
+            + mapToBusinessUsers(userIds : List<Integer>) : List<BusinessUser>
+            + mapToBusinessUser(userId : int) : BusinessUser
+        }
+    }
+
+    class DataRowNotFoundException{
+        + errorCode : ErrorCode
+        + constructor(errorCode : ErrorCode)
+        + getErrorCode() : ErrorCode
+    }
+
+    class InvalidInputException{
+        + errorCode : ErrorCode
+        + constructor(errorCode : ErrorCode)
+        + getErrorCode() : ErrorCode
+    }
+
+    class EntityAlreadyExistsException{
+        + errorCode : ErrorCode
+        + constructor(errorCode : ErrorCode)
+        + getErrorCode() : ErrorCode
+    }
+
+    class EntityToBusinessModelMapper{
+        + mapToBusinessTeams(dataTeam : Iterable<Team>) : List<BusinessTeam>
+        + mapToBusinessTeam(dataTeam : Team) : BusinessTeam
+        + mapToBusinessUsers(users : Collection<User>) : List<BusinessUser>
+        + mapToBusinessUsers(users : Iterable<User>) : List<BusinessUser>
+        + mapToBusinessUser(user : Users) : BusinessUser
+        + mapToBusinessImage(image : Image) : BusinessImage
+    }
+
+    class BusinessModelToEntityMapper{
+        + mapToTeamEntity(businessTeam : BusinessTeam) : Team
+        + mapToUserEntity(businessUser : BusinessUser) : User
+        + mapToUserEntities(businessUsers : List<BusinessUser>) : Collection<User>
+        + mapToImageEntity(businessImage : BusinessImage) : Image
+    }
+}
+
+TeamDetailsDTO .left.> UserNameAndIdDTO : <<use>>
+TeamController .up.> CreateTeamDTO : <<use>>
+TeamController .up.> UpdateTeamDTO : <<use>>
+TeamController .up.> TeamListElementDTO : <<use>>
+TeamController .up.> IdDTO : <<use>>
+TeamController .up.> TeamDetailsDTO : <<use>>
+TeamController .up.> TeamAvatarDTO : <<use>>
+TeamController .right.> ErrorResponse : <<use>>
+TeamController .right.> ErrorCode : <<use>>
+TeamController .right.> BusinessModelToDTOMapper : <<use>>
+TeamController .right.> DTOToBusinessModelMapper : <<use>>
+TeamController .down.> TeamService : <<use>>
+TeamService .down.> BusinessTeam : <<use>>
+TeamService .down.> BusinessImage : <<use>>
+TeamService .down.> TeamModel : <<use>>
+BusinessTeam .right.> InvalidInputException : <<use>>
+BusinessImage .right.> InvalidInputException : <<use>>
+BusinessTeam .> BusinessUser : <<use>>
+TeamModel .up.> BusinessTeam : <<use>>
+TeamModel .up.> BusinessImage : <<use>>
+TeamModel .down.> data.Team : <<use>>
+TeamModel .down.> data.User : <<use>>
+TeamModel .down.> data.Image : <<use>>
+TeamModel .down.> TeamRepository : <<use>>
+TeamModel .down.> ImageRepository : <<use>>
+TeamModel .right.> EntityToBusinessModelMapper : <<use>>
+TeamModel .right.> BusinessModelToEntityMapper : <<use>>
+TeamModel .right.> DataRowNotFoundException : <<use>>
+TeamModel .right.> EntityAlreadyExistsException : <<use>>
+Team .> Image : <<use>>
+Team .> User : <<use>>
+TeamRepository .down.> data.Team : <<use>>
+ImageRepository .down.> data.Image : <<use>>
+
+ErrorCode .down[hidden].> BusinessModelToDTOMapper
+BusinessModelToDTOMapper .down[hidden].> DTOToBusinessModelMapper
+DTOToBusinessModelMapper .down[hidden].> ErrorResponse
+ErrorResponse .down[hidden].> InvalidInputException
+InvalidInputException .down[hidden].> EntityAlreadyExistsException
+EntityAlreadyExistsException .down[hidden].> DataRowNotFoundException
+DataRowNotFoundException .down[hidden].> EntityToBusinessModelMapper
+EntityToBusinessModelMapper .down[hidden].> BusinessModelToEntityMapper
+
+controller .down[hidden].> business
+business .down[hidden].> data
+controller .left[hidden].> util
+business .left[hidden].> util
+data .left[hidden].> util
+
+
+@enduml

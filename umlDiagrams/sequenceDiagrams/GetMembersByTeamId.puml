@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+Client -> TeamController: HTTP GET /teams/{id}/members
+activate TeamController
+TeamController -> TeamService: getMembersByTeamId(teamId : String)
+activate TeamService
+TeamService -> TeamModel: getMembersByTeamId(teamId : String)
+activate TeamModel
+TeamModel -> TeamRepository: findById(id : String)
+activate TeamRepository
+
+TeamModel <-- TeamRepository: Optional<Team>
+deactivate TeamRepository
+TeamService <-- TeamModel: List<BusinessUser>
+deactivate TeamModel
+TeamController <-- TeamService: List<BusinessUser>
+deactivate TeamService
+Client <-- TeamController: response: HTTP 200 OK,\nbody: List<UserNameAndIdDTO>
+deactivate TeamController
+
+@enduml

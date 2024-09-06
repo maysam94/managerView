@@ -1,0 +1,54 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant UserController
+participant UserService
+participant BusinessUser
+participant UserModel
+participant UserRepository
+participant SecurityAnswerRepository
+
+Client -> UserController: HTTP POST /users (CreateUserDTO)
+activate UserController
+
+UserController -> UserService: createUser(createUserDTO)
+activate UserService
+
+UserService -> BusinessUser: new BusinessUser(createUserDTO)
+activate BusinessUser
+
+BusinessUser -> BusinessUser: validate()
+deactivate BusinessUser
+
+UserService -> UserModel: createUser(businessUser)
+activate UserModel
+
+UserModel -> UserRepository: save(user)
+activate UserRepository
+
+UserRepository --> UserModel: userSaved
+deactivate UserRepository
+
+alt Saving Security Answers
+    UserModel -> SecurityAnswerRepository: save(securityAnswer1)
+    activate SecurityAnswerRepository
+    SecurityAnswerRepository --> UserModel: void
+    deactivate SecurityAnswerRepository
+
+    UserModel -> SecurityAnswerRepository: save(securityAnswer2)
+    activate SecurityAnswerRepository
+    SecurityAnswerRepository --> UserModel: void
+    deactivate SecurityAnswerRepository
+end
+
+UserModel --> UserService: void
+deactivate UserModel
+
+UserService --> UserController: void
+deactivate UserService
+
+UserController --> Client: HTTP 201 Created
+deactivate UserController
+
+@enduml

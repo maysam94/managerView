@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Tests for endpoint: GET /users/:id" tests="2" skipped="0" failures="0" errors="0" timestamp="2024-06-19T09:24:52" hostname="DESKTOP-1CADN27" time="0.034">
+  <properties/>
+  <testcase name="An existing user can be retrieved from the database." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUserByIDTests" time="0.023"/>
+  <testcase name="An errorCode for user not found is returned if a user does not exist in the database." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUserByIDTests" time="0.008"/>
+  <system-out><![CDATA[2024-06-19T11:24:52.202+02:00  INFO 6260 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.internship.managerview.controllers.UserControllerIntegrationTests]: UserControllerIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2024-06-19T11:24:52.205+02:00  INFO 6260 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.internship.managerview.ManagerViewApplication for test class com.internship.managerview.controllers.UserControllerIntegrationTests$GetUserByIDTests
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

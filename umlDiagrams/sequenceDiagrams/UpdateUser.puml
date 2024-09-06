@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Client -> UserController: HTTP PUT /users/{id}
+activate UserController
+UserController -> UserService: updateUser(id, updateUserDTO)
+activate UserService
+UserService -> UserModel: getUserById(id)
+activate UserModel
+UserModel --> UserService: BusinessUser
+deactivate UserModel
+UserService -> BusinessUser: updateFromDTO(updateUserDTO)
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validateRole(role)
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validateToUpdate()
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validateField(firstName, NAME_PATTERN, ErrorCode.INVALID_FIRST_NAME)
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validateField(lastName, NAME_PATTERN, ErrorCode.INVALID_LAST_NAME)
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validateEmail()
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validatePrefixes()
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> BusinessUser: validateRole()
+activate BusinessUser
+BusinessUser --> UserService: void
+deactivate BusinessUser
+UserService -> UserModel: updateUser(id, businessUser)
+activate UserModel
+UserModel --> UserService: Updated User
+deactivate UserModel
+UserService --> UserController: Updated User
+deactivate UserService
+deactivate UserController
+Client <-- UserController: response: HTTP 200 OK
+@enduml

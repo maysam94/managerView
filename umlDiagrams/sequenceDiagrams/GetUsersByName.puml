@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+Client -> UserController: HTTP GET /users?name=<name_input>
+activate UserController
+UserController -> UserService: getUsersByName(name : String)
+activate UserService
+UserService -> UserModel: getUsersByName(name : String)
+activate UserModel
+UserModel -> UserRepository: findAllUsersByName(name : String)
+activate UserRepository
+
+UserModel <-- UserRepository: Iterable<User>
+deactivate UserRepository
+UserService <-- UserModel: List<BusinessUser>
+deactivate UserModel
+UserController <-- UserService: List<BusinessUser>
+deactivate UserService
+Client <-- UserController: response: HTTP 200 OK,\nbody: ArrayList<UserByNameDTO>
+deactivate UserController
+
+@enduml

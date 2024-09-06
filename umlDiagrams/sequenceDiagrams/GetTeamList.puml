@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+Client -> TeamController: HTTP GET /teams
+activate TeamController
+TeamController -> TeamService: getTeamList()
+activate TeamService
+TeamService -> TeamModel: getTeamList()
+activate TeamModel
+TeamModel -> TeamRepository: findTop100ByIsActiveTrueOrderByName()
+activate TeamRepository
+
+TeamModel <-- TeamRepository: Iterable<Team>
+deactivate TeamRepository
+TeamService <-- TeamModel: List<BusinessTeam>
+deactivate TeamModel
+TeamController <-- TeamService: List<BusinessTeam>
+deactivate TeamService
+Client <-- TeamController: response: HTTP 200 OK,\nbody: List<TeamListElementDTO>
+deactivate TeamController
+
+@enduml

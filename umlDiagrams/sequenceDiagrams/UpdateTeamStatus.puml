@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Client -> TeamController: HTTP PUT /teams/{id}/status
+activate TeamController
+TeamController -> TeamService: updateTeamStatus(teamId: String)
+
+activate TeamService
+TeamService -> TeamModel: updateTeamStatus(teamId: String)
+
+activate TeamModel
+TeamModel -> TeamRepository: findById(id : String)
+activate TeamRepository
+TeamModel <-- TeamRepository: Team
+deactivate TeamRepository
+TeamModel -> TeamRepository: save(Team)
+activate TeamRepository
+TeamModel <-- TeamRepository: Team
+deactivate TeamRepository
+deactivate TeamModel
+
+deactivate TeamService
+
+Client <-- TeamController: response: HTTP 200 OK
+deactivate TeamController
+
+@enduml

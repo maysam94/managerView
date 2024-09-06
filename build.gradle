@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.3'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.internship'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'commons-io:commons-io:2.15.1'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core:3.+'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'net.jqwik:jqwik:1.7.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+}
+
+tasks.named('bootBuildImage') {
+    builder = 'paketobuildpacks/builder-jammy-base:latest'
+}
+
+tasks.named('test') {
+    useJUnitPlatform {
+        includeEngines 'jqwik', 'junit-jupiter'
+    }
+}
+

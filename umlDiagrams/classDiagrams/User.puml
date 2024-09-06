@@ -1,0 +1,189 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+skinparam classAttributeIconSize 0
+
+package controller {
+    class UserController{
+        - userService : UserService
+        - dtoMapper : BusinessModelToDTOMapper
+        + getUserById(id: int) : ResponseEntity<Object>
+        + getUserByName(name: String) : ResponseEntity<Object>
+        + registerUser(createUserDTO: CreateUserDTO) : ResponseEntity<?>
+        + updateUser(id: int, updateUserDTO: UpdateUserDTO) : ResponseEntity<?>
+        + changePassword(id: int, updatePasswordDTO: UpdatePasswordDTO) : ResponseEntity<?>
+        - getInvalidInputResponse(exception : InvalidInputException) : ResponseEntity<Object>
+        - getDataRowNotFoundResponse(exception : DataRowNotFoundException) : ResponseEntity<Object>
+        - getEntityAlreadyExistsResponse(exception : EntityAlreadyExistsException) : ResponseEntity<Object>
+        - getGenericRegistrationResponse(exception : GenericRegistrationException) : ResponseEntity<Object>
+        - getGenericErrorResponse(exception : Exception) : ResponseEntity<Object>
+    }
+
+    class CreateUserDTO {
+        - firstName : String
+        - prefixes : String
+        - lastName : String
+        - email : String
+        - password : String
+        - securityQuestion1Id : String
+        - securityAnswer1 : String
+        - securityQuestion2Id : String
+        - securityAnswer2 : String
+        + constructor(firstName : String, lastName : String, email : String, password : String)
+        {method} getters and setters
+    }
+
+    class UpdateUserDTO {
+        - firstName : String
+        - lastName : String
+        - prefixes : String
+        - email : String
+        - role : Role
+        + constructor(firstName : String, lastName : String, email : String, role : Role, prefixes: String)
+        {method} getters and setters
+    }
+
+    class UpdatePasswordDTO {
+        - oldPassword : String
+        - newPassword : String
+        + constructor(oldPassword : String, newPassword : String)
+        {method} getters and setters
+    }
+}
+
+package business {
+    class UserService {
+        - userModel : UserModel
+        - passwordEncoder : PasswordEncoder
+        + getUserById(id: int) : BusinessUser
+        + createUser(createUserDTO: CreateUserDTO) : void
+        + getUsersByName(name : String) : List<UserByNameDTO>
+        + updateUser(id: int, updateUserDTO: UpdateUserDTO) : void
+        + changePassword(id: int, oldPassword: String, newPassword: String) : void
+    }
+
+    class BusinessUser {
+        - id : int
+        - firstName : String
+        - prefixes : String
+        - lastName : String
+        - role : Role
+        - email : String
+        - password : String
+        - securityQuestion1Id : String
+        - securityAnswer1 : String
+        - securityQuestion2Id : String
+        - securityAnswer2 : String
+        + constructor(...)
+        {method} getters and setters
+    }
+}
+
+package data {
+    class UserModel {
+        - userRepository: UserRepository
+        - securityAnswerRepository: SecurityAnswerRepository
+        + getUserById(id : int) : User
+        + createUser(businessUser : BusinessUser) : void
+        + getUsersByName(name : String) : List<BusinessUser>
+        + updateUser(id: int, updateUserDTO: UpdateUserDTO) : void
+        + changePassword(id: int, newPassword: String) : void
+    }
+
+    interface UserRepository {
+        + findById(id : int) : Optional<User>
+        + existsByEmail(email : String) : boolean
+        + findAllUsersByName(name : String) : Iterable<User>
+        + updatePassword(id: int, newPassword: String) : void
+    }
+
+    entity User {
+        - id: int
+        - firstName : String
+        - prefixes : String
+        - lastName : String
+        - role : Role
+        - email : String
+        - password : String
+        - securityAnswers : List<SecurityAnswer>
+        + constructor(...)
+        {method} getters and setters
+    }
+
+    entity SecurityQuestion {
+        - id : String
+        - question : String
+    }
+
+    entity SecurityAnswer {
+        - id : String
+        - answer : String
+        - question : SecurityQuestion
+        - user : User
+    }
+}
+
+package util {
+    enum Role {
+        MANAGER
+        MEMBER
+    }
+
+    enum ErrorCode {
+        NUMERIC_ID_REQUIRED
+        ENTITY_NOT_FOUND
+        INVALID_FIRST_NAME
+        INVALID_LAST_NAME
+        INVALID_PREFIX
+        INVALID_EMAIL
+        INVALID_PASSWORD
+        REGISTRATION_FAILED
+        GENERIC_ERROR
+
+        + code : int
+        - constructor(code : int)
+    }
+
+    class ErrorResponse {
+        - errorCode : ErrorCode
+        + constructor(errorCode: ErrorCode)
+        {method} getters and setters
+    }
+
+    class DataRowNotFoundException{
+        + constructor(errorCode: ErrorCode)
+        + getErrorCode() : ErrorCode
+    }
+
+    class InvalidInputException{
+        + constructor(errorCode: ErrorCode)
+        + getErrorCode() : ErrorCode
+    }
+
+    class GenericRegistrationException {
+        + constructor(errorCode: ErrorCode)
+    }
+
+}
+
+UserController ..> CreateUserDTO : <<use>>
+UserController ..> UpdateUserDTO : <<use>>
+UserController ..> UpdatePasswordDTO : <<use>>
+UserController ..> UserService : <<use>>
+UserController ..> ErrorResponse : <<use>>
+UserController ..> DataRowNotFoundException : <<use>>
+UserController ..> InvalidInputException : <<use>>
+UserController ..> ErrorCode : <<use>>
+UserService ..> UserModel : <<use>>
+UserService ..> BusinessUser : <<use>>
+UserModel ..> User : <<use>>
+UserModel ..> UserRepository : <<use>>
+UserModel ..> SecurityAnswerRepository : <<use>>
+BusinessUser ..> Role : <<use>>
+data.User ..> Role : <<use>>
+data.User ..> SecurityAnswer : <<use>>
+DataRowNotFoundException ..> ErrorCode : <<use>>
+InvalidInputException ..> ErrorCode : <<use>>
+UserRepository ..> data.User : <<use>>
+
+@enduml

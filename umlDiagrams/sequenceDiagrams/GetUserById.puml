@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+Client -> UserController: HTTP GET /users/:id
+activate UserController
+UserController -> UserService: getUserById(id : int)
+activate UserService
+UserService -> UserModel: getUserById(id : int)
+activate UserModel
+UserModel -> UserRepository: findById(id : int)
+activate UserRepository
+
+UserModel <-- UserRepository: Optional<User>
+deactivate UserRepository
+UserService <-- UserModel: BusinessUser
+deactivate UserModel
+UserController <-- UserService: BusinessUser
+deactivate UserService
+Client <-- UserController: response: HTTP 200 OK, body: UserByIdDTO
+deactivate UserController
+
+@enduml

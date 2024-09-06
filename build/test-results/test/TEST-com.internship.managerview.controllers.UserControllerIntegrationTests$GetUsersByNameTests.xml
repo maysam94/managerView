@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Tests for endpoint: GET /users?name=&lt;name_input&gt;" tests="5" skipped="0" failures="0" errors="0" timestamp="2024-06-19T09:24:51" hostname="DESKTOP-1CADN27" time="0.666">
+  <properties/>
+  <testcase name="Users starting with &quot;k&quot; are retrieved in alphabetical order." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUsersByNameTests" time="0.606"/>
+  <testcase name="No Users are retrieved and no exception is thrown if the given name is not found." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUsersByNameTests" time="0.013"/>
+  <testcase name="Users starting with &quot;ke&quot; are retrieved in alphabetical order." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUsersByNameTests" time="0.012"/>
+  <testcase name="All Users are retrieved in alphabetical order when no name is given." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUsersByNameTests" time="0.016"/>
+  <testcase name="No Users are retrieved and ErrorCode for invalid query character is returned if the name contains an invalid character." classname="com.internship.managerview.controllers.UserControllerIntegrationTests$GetUsersByNameTests" time="0.011"/>
+  <system-out><![CDATA[2024-06-19T11:24:51.465+02:00  INFO 6260 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.internship.managerview.controllers.UserControllerIntegrationTests]: UserControllerIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2024-06-19T11:24:51.470+02:00  INFO 6260 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.internship.managerview.ManagerViewApplication for test class com.internship.managerview.controllers.UserControllerIntegrationTests$GetUsersByNameTests
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

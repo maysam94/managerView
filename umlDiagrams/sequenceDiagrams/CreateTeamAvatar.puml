@@ -1,0 +1,39 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Client -> TeamController: HTTP POST /teams/{id}/avatar
+activate TeamController
+TeamController -> TeamService: addTeamAvatar(teamId: String, image: MultipartFile)
+
+activate TeamService
+TeamService -> BusinessImage: validate()
+activate BusinessImage
+deactivate BusinessImage
+TeamService -> BusinessImage: convertInputImageToSavableImage()
+activate BusinessImage
+deactivate BusinessImage
+TeamService -> TeamModel: addTeamAvatar(teamId: String, image : BusinessImage)
+
+activate TeamModel
+TeamModel -> TeamRepository: findById(id : String)
+activate TeamRepository
+TeamModel <-- TeamRepository: Team
+deactivate TeamRepository
+TeamModel -> ImageRepository: save(Image)
+activate ImageRepository
+TeamModel <-- ImageRepository: Image
+deactivate ImageRepository
+TeamModel -> TeamRepository: save(Team)
+activate TeamRepository
+TeamModel <-- TeamRepository: Team
+deactivate TeamRepository
+TeamService <-- TeamModel: String
+deactivate TeamModel
+
+TeamController <-- TeamService: String
+deactivate TeamService
+
+Client <-- TeamController: response: HTTP 201 CREATED,\nbody: IdDTO
+deactivate TeamController
+
+@enduml

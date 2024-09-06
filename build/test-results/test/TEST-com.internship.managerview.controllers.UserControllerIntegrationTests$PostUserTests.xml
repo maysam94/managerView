@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Tests for endpoint: POST /users" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-06-19T09:24:52" hostname="DESKTOP-1CADN27" time="0.206">
+  <properties/>
+  <testcase name="Create user with existing email - conflict" classname="com.internship.managerview.controllers.UserControllerIntegrationTests$PostUserTests" time="0.135"/>
+  <testcase name="Update existing user - success" classname="com.internship.managerview.controllers.UserControllerIntegrationTests$PostUserTests" time="0.028"/>
+  <testcase name="Update existing user with invalid data - bad request" classname="com.internship.managerview.controllers.UserControllerIntegrationTests$PostUserTests" time="0.041"/>
+  <system-out><![CDATA[2024-06-19T11:24:52.245+02:00  INFO 6260 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.internship.managerview.controllers.UserControllerIntegrationTests]: UserControllerIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2024-06-19T11:24:52.249+02:00  INFO 6260 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.internship.managerview.ManagerViewApplication for test class com.internship.managerview.controllers.UserControllerIntegrationTests$PostUserTests
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Client -> TeamController: HTTP POST /teams
+activate TeamController
+TeamController -> TeamService: createTeam(team: BusinessTeam)
+
+activate TeamService
+TeamService -> BusinessTeam: validateToCreate()
+activate BusinessTeam
+deactivate BusinessTeam
+TeamService -> TeamModel: createTeam(team : BusinessTeam)
+
+activate TeamModel
+TeamModel -> TeamRepository: save(Team)
+activate TeamRepository
+TeamModel <-- TeamRepository: Team
+deactivate TeamRepository
+TeamService <-- TeamModel: String
+deactivate TeamModel
+
+TeamController <-- TeamService: String
+deactivate TeamService
+
+Client <-- TeamController: response: HTTP 201 CREATED,\nbody: IdDTO
+deactivate TeamController
+
+@enduml
